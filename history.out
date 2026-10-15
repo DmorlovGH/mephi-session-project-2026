@@ -1,0 +1,300 @@
+    1  echo "RED OS 8: SSH and clipboard OK"
+    2  exit
+    3  sudo whoami
+    4  sudo systemctl status sshd
+    5  ip -4 addr show ens160 
+    6  cat /etc/redos-release
+    7  hostnamectl
+    8  getenforce
+    9  lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINTS
+   10  sudo shutdown -h now
+   11  sudo fdisk /dev/sdb
+   12  lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS
+   13  sudo mkfs.ext4 -L MEPHI_WEB /dev/sdb1
+   14  lsblk -f /dev/sdb
+   15  sudo mkdir -p /mephi-web
+   16  ls -ld /mephi-web
+   17  sudo cp -a /etc/fstab /etc/fstab.bak
+   18  sudo ls -l /etc/fstab /etc/fstab.bak
+   19  cat /etc/fstab
+   20  echo 'LABEL=MEPHI_WEB /mephi-web ext4 defaults 0 2' | sudo tee -a /etc/fstab
+   21  tail -n 6 /etc/fstab
+   22  sudo findmnt --verify --verbose
+   23  sudo systemctl daemon-reload
+   24  sudo findmnt --verify --verbose
+   25  sudo mount /mephi-web
+   26  findmnt /mephi-web -o TARGET,SOURCE,FSTYPE,OPTIONS
+   27  exit
+   28  lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS
+   29  sudo fdisk /dev/sdb
+   30  lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS
+   31  mkdir -p ~/mephi-session-logs
+   32  script -a -f ~/mephi-session-logs/session.log
+   33  cat /home/mephiadmin/mephi-session-logs/session.log
+   34  less ~/mephi-session-logs/session.log
+   35  less -R -f ~/mephi-session-logs/session.log
+   36  sudo reboot
+   37  findmnt /mephi-web -o TARGET,SOURCE,FSTYPE,OPTIONS
+   38  ping -c 4 8.8.8.8 | tee ~/ping.out
+   39  sudo dnf check-update
+   40  sudo dnf upgrade --assumeno
+   41  sudo dnf upgrade -y
+   42  учше
+   43  exit
+   44  script -a -f ~/mephi-session-logs/session.log
+   45  sudo reboot
+   46  uname -r
+   47  getenforce
+   48  findmnt /mephi-web -o TARGET,SOURCE,FSTYPE,OPTIONS
+   49  sudo dnf install -y nginx
+   50  sudo dnf install -y libcap-ng-utils
+   51  rpm -q tcpdump
+   52  cd /tmp && dnf download tcpdump
+   53  ls -lh /tmp/tcpdump*.rpm
+   54  sudo rpm -Uvh /tmp/tcpdump-4.99.5-1.red80.x86_64.rpm
+   55  rpm -q tcpdump
+   56  dnf history > ~/dnf.out
+   57  cat ~/dnf.out
+   58  systemctl status nginx --no-pager
+   59  sudo systemctl start nginx
+   60  systemctl status nginx --no-pager
+   61  sudo systemctl enable nginx
+   62  systemctl is-enabled nginx
+   63  journalctl -u nginx -b > ~/journalctl.out
+   64  cat ~/journalctl.out
+   65  nmcli -f GENERAL.DEVICE,IP4.ADDRESS,IP4.GATEWAY,IP4.DNS device show ens160
+   66  nmcli -g GENERAL.CONNECTION device show ens160
+   67  nmcli -g ipv4.method connection show ens160
+   68  for name in user1 user2 user3 curator1 curator2 curators; do     echo "=== $name ===";     getent passwd "$name";     getent group "$name"; done
+   69  for id in 5501 5502 5503; do     echo "UID $id:";     getent passwd "$id" || echo "свободен"; done
+   70  echo "GID 4444:"
+   71  getent group 4444 || echo "свободен"
+   72  sudo groupadd developers
+   73  sudo groupadd -g 4444 curators
+   74  getent group developers curators
+   75  sudo useradd -m -u 5501 -G developers -s /bin/bash user1
+   76  sudo useradd -m -u 5502 -G developers -s /bin/bash user2
+   77  sudo useradd -m -u 5503 -G developers -s /bin/bash user3
+   78  sudo useradd -m -g curators -s /bin/bash curator1
+   79  sudo useradd -m -g curators -s /bin/bash curator2
+   80  for user in user1 user2 user3 curator1 curator2; do     id "$user"; done
+   81  sudo mkdir -p /data/mephi-2026
+   82  sudo chown root:developers /data/mephi-2026
+   83  sudo chmod 2770 /data/mephi-2026
+   84  ls -ld /data/mephi-2026
+   85  sudo setfacl -m g:curators:rx /data/mephi-2026
+   86  sudo setfacl -m d:g::rwx,d:g:curators:rx,d:m::rwx,d:o::--- /data/mephi-2026
+   87  getfacl -p /data/mephi-2026
+   88  sudo -u user1 bash -c 'echo "Created by user1" > /data/mephi-2026/test.txt'
+   89  sudo -u user2 cat /data/mephi-2026/test.txt
+   90  sudo -u user2 bash -c 'echo "Modified by user2" >> /data/mephi-2026/test.txt'
+   91  sudo -u user3 cat /data/mephi-2026/test.txt
+   92  getfacl -p /data/mephi-2026/test.txt
+   93  sudo getfacl -p /data/mephi-2026/test.txt
+   94  echo "=== curator1: чтение ==="
+   95  sudo -u curator1 cat /data/mephi-2026/test.txt
+   96  echo "=== curator2: попытка записи (ожидаем отказ) ==="
+   97  sudo -u curator2 bash -c 'echo "Unauthorized" >> /data/mephi-2026/test.txt'
+   98  echo "=== curator1: попытка создания файла (ожидаем отказ) ==="
+   99  sudo -u curator1 touch /data/mephi-2026/curator-test.txt
+  100  echo "=== mephiadmin: попытка чтения (ожидаем отказ) ==="
+  101  cat /data/mephi-2026/test.txt
+  102  echo "=== user3: запись в файл user1 ==="
+  103  sudo -u user3 bash -c 'echo "Modified by user3" >> /data/mephi-2026/test.txt'
+  104  echo "=== user1: чтение изменений ==="
+  105  sudo -u user1 cat /data/mephi-2026/test.txt
+  106  for user in user1 user2 user3; do     sudo -u "$user" bash -c "echo 'Created by $user' > /data/mephi-2026/${user}.txt"; done
+  107  sudo ls -l /data/mephi-2026/
+  108  sudo -u user1 mkdir /data/mephi-2026/project
+  109  sudo -u user2 bash -c 'echo "Nested file" > /data/mephi-2026/project/readme.txt'
+  110  sudo -u user3 bash -c 'echo "Updated by user3" >> /data/mephi-2026/project/readme.txt'
+  111  sudo -u curator1 cat /data/mephi-2026/project/readme.txt
+  112  sudo getfacl -p /data/mephi-2026/project
+  113  sudo getfacl -p /data/mephi-2026/project/readme.txt
+  114  command -v tcpdump
+  115  command -v setcap
+  116  command -v getcap
+  117  ls -l "$(command -v tcpdump)"
+  118  sudo setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
+  119  getcap /usr/sbin/tcpdump
+  120  sudo -u user1 timeout 5 tcpdump -i ens160 -c 1 -nn
+  121  getcap /usr/sbin/tcpdump > ~/getcap.out
+  122  cat ~/getcap.out
+  123  echo "=== SELinux mode ==="
+  124  getenforce
+  125  echo "=== SELinux context ==="
+  126  ls -Zd /mephi-web
+  127  echo "=== semanage ==="
+  128  command -v semanage || echo "semanage не установлен"
+  129  echo "=== nginx status ==="
+  130  systemctl is-active nginx
+  131  sudo dnf install -y policycoreutils-python-utils
+  132  command -v semanage
+  133  sudo semanage fcontext -a -t httpd_sys_content_t '/mephi-web(/.*)?'
+  134  sudo restorecon -RFv /mephi-web
+  135  ls -Zd /mephi-web
+  136  sudo nginx -T 2>&1 | grep -nE 'configuration file|server \{|listen |root |include '
+  137  sudo cp -a /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+  138  sudo sed -i 's|^[[:space:]]*root[[:space:]]*/usr/share/nginx/html;|        root         /mephi-web;|' /etc/nginx/nginx.conf
+  139  sudo nginx -t
+  140  grep -n 'root ' /etc/nginx/nginx.conf
+  141  sudo systemctl reload nginx
+  142  systemctl is-active nginx
+  143  getenforce
+  144  systemctl is-active nginx
+  145  getenforce
+  146  echo 'Hello from Student: 375445' | sudo tee /mephi-web/index.html
+  147  sudo restorecon -v /mephi-web/index.html
+  148  ls -Z /mephi-web/index.html
+  149  curl -i http://localhost/
+  150  getenforce > ~/getenforce.out
+  151  curl http://localhost/ > ~/curl.out
+  152  cat ~/getenforce.out
+  153  cat ~/curl.out
+  154  echo "=== PAM login ==="
+  155  grep -nE '^[[:space:]]*[^#[:space:]].*(pam_access|pam_securetty|pam_listfile|system-auth)' /etc/pam.d/login
+  156  echo "=== PAM access.conf ==="
+  157  grep -nEv '^[[:space:]]*(#|$)' /etc/security/access.conf
+  158  cat -n /etc/pam.d/login
+  159  printf '%s\n'   '-:curator1:ALL'   '-:curator2:ALL'   '+:ALL:ALL' | sudo tee /etc/security/mephi-console-access.conf
+  160  cat -n /etc/security/mephi-console-access.conf
+  161  sudo cp -a /etc/pam.d/login /etc/pam.d/login.bak
+  162  sudo sed -i '/^account[[:space:]]*required[[:space:]]*pam_nologin\.so/a account    required     pam_access.so accessfile=/etc/security/mephi-console-access.conf' /etc/pam.d/login
+  163  grep -nE '^(account|auth)' /etc/pam.d/login
+  164  command -v pamtester || echo "pamtester не установлен"
+  165  dnf list --available pamtester
+  166  sudo dnf install -y pamtester.x86_64
+  167  command -v pamtester
+  168  rpm -q pamtester
+  169  for user in curator1 curator2 user1 mephiadmin; do     echo "=== Проверка: $user ===";     sudo pamtester login "$user" acct_mgmt;     echo "Код завершения: $?"; done
+  170  echo "=== pwquality.conf ==="
+  171  grep -nE '^[[:space:]]*(minlen|enforcing)[[:space:]]*=' /etc/security/pwquality.conf || echo "Явные настройки не найдены"
+  172  echo "=== login.defs ==="
+  173  grep -nE '^[[:space:]]*PASS_(MAX_DAYS|MIN_DAYS|WARN_AGE)' /etc/login.defs
+  174  echo "=== Текущий срок действия пароля mephiadmin ==="
+  175  sudo chage -l mephiadmin
+  176  exit
+  177  sudo cp -a /etc/security/pwquality.conf /etc/security/pwquality.conf.bak
+  178  sudo cp -a /etc/login.defs /etc/login.defs.bak
+  179  echo 'minlen = 12' | sudo tee -a /etc/security/pwquality.conf
+  180  sudo sed -i -E 's/^([[:space:]]*PASS_MAX_DAYS[[:space:]]+)[0-9]+/\190/' /etc/login.defs
+  181  echo "=== Минимальная длина ==="
+  182  grep -nE '^[[:space:]]*minlen[[:space:]]*=' /etc/security/pwquality.conf
+  183  echo "=== Максимальный срок ==="
+  184  grep -nE '^[[:space:]]*PASS_MAX_DAYS' /etc/login.defs
+  185  for user in mephiadmin user1 user2 user3 curator1 curator2; do     sudo chage -M 90 "$user"; done
+  186  echo "=== Проверка максимального срока действия ==="
+  187  for user in mephiadmin user1 user2 user3 curator1 curator2; do     printf '%-12s ' "$user";     sudo chage -l "$user" | grep 'Maximum number of days'; done
+  188  echo "=== Проверка подключения pam_pwquality ==="
+  189  grep -n 'pam_pwquality.so' /etc/pam.d/system-auth /etc/pam.d/password-auth
+  190  id
+  191  chage -l mephiadmin
+  192  учше
+  193  exit
+  194  for user in user1 user2 user3 curator1 curator2; do     sudo chage -M 90 "$user"; done
+  195  echo "=== Проверка всех пользователей ==="
+  196  for user in mephiadmin user1 user2 user3 curator1 curator2; do     printf '%-12s ' "$user";     sudo chage -l "$user" | grep 'Maximum number of days'; done
+  197  echo "=== Проверка минимальной длины пароля ==="
+  198  grep -nE '^[[:space:]]*minlen[[:space:]]*=' /etc/security/pwquality.conf
+  199  echo "=== Проверка PAM ==="
+  200  grep -n 'pam_pwquality.so' /etc/pam.d/system-auth /etc/pam.d/password-auth
+  201  echo "=== nginx ==="
+  202  systemctl is-enabled nginx
+  203  systemctl is-active nginx
+  204  echo "=== Монтирование ==="
+  205  findmnt /mephi-web
+  206  echo "=== Проверка fstab ==="
+  207  sudo findmnt --verify
+  208  echo "=== SELinux ==="
+  209  getenforce
+  210  echo "=== HTTP ==="
+  211  curl -fsS http://localhost/
+  212  exit
+  213  echo "=== Последняя загрузка ОС ==="
+  214  uptime -s
+  215  who -b
+  216  echo "=== nginx после перезагрузки ==="
+  217  systemctl is-enabled nginx
+  218  systemctl is-active nginx
+  219  systemctl status nginx --no-pager -l
+  220  echo "=== Автоматическое монтирование ==="
+  221  findmnt /mephi-web
+  222  echo "=== SELinux ==="
+  223  getenforce
+  224  ls -Zd /mephi-web
+  225  ls -Z /mephi-web/index.html
+  226  echo "=== HTTP ==="
+  227  curl -fsS http://localhost/
+  228  echo "=== Состояние паролей ==="
+  229  sudo passwd -S user1
+  230  sudo passwd -S curator1
+  231  sudo passwd -S curator2
+  232  exit
+  233  script -a -f ~/mephi-session-logs/session.log
+  234  sudo passwd user1
+  235  sudo passwd curator1
+  236  sudo passwd curator2
+  237  sudo passwd user1
+  238  sudo passwd -S user1
+  239  sudo passwd -S curator1
+  240  sudo passwd -S curator2
+  241  echo "=== Состояние ОС ==="
+  242  uptime
+  243  echo "=== Состояние локальной консоли ==="
+  244  systemctl is-active getty@tty1.service
+  245  echo "=== Процесс консольного входа ==="
+  246  ps -ef | grep '[a]getty'
+  247  echo "=== Проверка nginx ==="
+  248  systemctl is-active nginx
+  249  echo "=== Состояние getty@tty1 ==="
+  250  systemctl status getty@tty1.service --no-pager -l
+  251  echo "=== Процессы tty1 ==="
+  252  ps -t tty1 -o pid,ppid,stat,comm,args
+  253  echo "=== Активная виртуальная консоль ==="
+  254  cat /sys/class/tty/tty0/active
+  255  journalctl -u nginx -b > ~/journalctl.out
+  256  dnf history > ~/dnf.out
+  257  stat /data/mephi-2026 > ~/stat.out
+  258  stat /mephi-web >> ~/stat.out
+  259  getenforce > ~/getenforce.out
+  260  curl -fsS http://localhost/ > ~/curl.out
+  261  getcap /usr/sbin/tcpdump > ~/getcap.out
+  262  echo "=== Проверка файлов ==="
+  263  ls -lh ~/ping.out ~/dnf.out ~/stat.out   ~/journalctl.out ~/getcap.out   ~/getenforce.out ~/curl.out
+  264  echo "=== Контрольные результаты ==="
+  265  cat ~/getenforce.out ~/curl.out ~/getcap.out
+  266  mkdir -p ~/mephi-session-project-2026
+  267  echo "=== Рабочий каталог ==="
+  268  ls -ld ~/mephi-session-project-2026
+  269  echo "=== Системные файлы ==="
+  270  for file in   /etc/fstab   /etc/passwd   /etc/shadow   /etc/group   /etc/security/pwquality.conf; do   if sudo test -f "$file"; then     echo "OK: $file";   else     echo "MISSING: $file";   fi; done
+  271  echo "=== Git ==="
+  272  git --version
+  273  sudo dnf install -y git
+  274  git --version
+  275  cd ~/mephi-session-project-2026
+  276  cp ~/ping.out    ~/dnf.out    ~/stat.out    ~/journalctl.out    ~/getcap.out    ~/getenforce.out    ~/curl.out    .
+  277  echo "=== Файлы проекта ==="
+  278  ls -lh
+  279  echo "=== Контроль количества отчётов ==="
+  280  find . -maxdepth 1 -name '*.out' -type f | wc -l
+  281  cd ~/mephi-session-project-2026
+  282  cp /etc/fstab ./fstab
+  283  cp /etc/passwd ./passwd
+  284  cp /etc/group ./group
+  285  cp /etc/security/pwquality.conf ./pwquality.conf
+  286  sudo awk -F: 'BEGIN {OFS=":"} {$2="[REDACTED]"; print}'   /etc/shadow > ./shadow
+  287  echo "=== Проверка файлов ==="
+  288  ls -lh fstab passwd shadow group pwquality.conf
+  289  echo "=== Проверка структуры shadow ==="
+  290  awk -F: '
+  NF != 9 {bad++}
+  $2 != "[REDACTED]" {bad++}
+  END {
+    print "Строк:", NR
+    print "Нарушений:", bad+0
+  }
+' shadow
+  291  cat ./shadow
+  292  cd ~/mephi-session-project-2026
+  293  history > ./history.out
