@@ -1,0 +1,42 @@
+# file: /data/mephi-2026
+# owner: root
+# group: developers
+# flags: -s-
+user::rwx
+group::rwx
+group:curators:r-x
+mask::rwx
+other::---
+default:user::rwx
+default:group::rwx
+default:group:curators:r-x
+default:mask::rwx
+default:other::---
+
+# file: /data/mephi-2026/test.txt
+# owner: user1
+# group: developers
+user::rw-
+group::rwx	#effective:rw-
+group:curators:r-x	#effective:r--
+mask::rw-
+other::---
+
+
+=== curator1: read test.txt ===
+Created by user1
+Modified by user2
+Modified by user3
+Exit code: 0
+
+=== curator2: write test.txt (expected: denied) ===
+bash: line 1: /data/mephi-2026/test.txt: Permission denied
+Exit code: 1
+
+=== curator1: create file (expected: denied) ===
+touch: cannot touch '/data/mephi-2026/curator-test.txt': Permission denied
+Exit code: 1
+
+=== mephiadmin: read test.txt (expected: denied) ===
+cat: /data/mephi-2026/test.txt: Permission denied
+Exit code: 1

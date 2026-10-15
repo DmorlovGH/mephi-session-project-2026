@@ -96,6 +96,8 @@ LABEL=MEPHI_WEB /mephi-web ext4 defaults 0 2
 - постороннему пользователю доступ был запрещён;
 - наследование прав проверено во вложенном каталоге.
 
+**Подтверждения:** [stat.out](stat.out), [dac.out](dac.out).
+
 ### 5.2. Linux capabilities
 
 Для программы /usr/sbin/tcpdump назначены следующие capabilities:
@@ -192,6 +194,7 @@ curl -i http://localhost/
 - [ping.out](ping.out) — проверка сетевой доступности;
 - [dnf.out](dnf.out) — история операций DNF;
 - [stat.out](stat.out) — сведения о каталогах;
+- [dac.out](dac.out) — настройки DAC/ACL и результаты проверок доступа;
 - [journalctl.out](journalctl.out) — журнал службы nginx;
 - [getcap.out](getcap.out) — capabilities программы tcpdump;
 - [getenforce.out](getenforce.out) — режим SELinux;
